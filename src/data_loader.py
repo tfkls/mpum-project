@@ -10,6 +10,7 @@ def load_data(path='../data/DSL-StrongPasswordData.csv', include_rep=True,
         new_column = (df['sessionIndex'] - 1) * 50 + df['rep']
         df.insert(1, 'rep2', new_column)
     columns_to_drop.extend(['sessionIndex', 'rep'])
+    df["subject"] = df["subject"].str.replace("^s", "", regex=True).astype(int)
     if not include_h:
         columns_to_drop.extend(df.filter(like="H.").columns)
     if not include_dd:
