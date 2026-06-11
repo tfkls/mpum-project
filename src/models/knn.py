@@ -1,4 +1,4 @@
-"""k-nearest-neighbors classifier on z-scored timing features."""
+"""k-nearest-neighbors classifier on timing features."""
 
 import numpy as np
 
@@ -26,7 +26,7 @@ class KNN(Model):
             self.cov_inv = np.linalg.inv(covariance_matrix)
         return self
 
-    def predict(self, x):
+    def _distances(self, x):
         x = (x - self.mus) / self.sigmas
         if self.metric == "euclidean":
             distances = np.sqrt(np.sum((self.x - x) ** 2, axis=1))
@@ -43,8 +43,10 @@ class KNN(Model):
             distances = np.sqrt(np.sum((diff @ self.cov_inv) * diff, axis=1))
         else:
             raise Exception("Unknown metric")
+        return distances
 
-        nearest_indices = np.argsort(distances)[: self.k]
+    def predict(self, x):
+        nearest_indices = np.argsort(self._distances(x))[: self.k]
         nearest = self.y[nearest_indices]
 
         counts = np.bincount(nearest)
@@ -60,3 +62,26 @@ class KNN(Model):
                     break
 
         return result
+
+
+class KNNWeighted(KNN):
+    param_grid = {
+        "k": [3, 5, 9, 15],
+        "metric": ["euclidean", "manhattan", "chebyshev"],
+        "alpha": [0.33, 0.5, 1.0],
+    }
+
+    def __init__(self, k=5, metric="manhattan", alpha=1.0):
+        super().__init__(k, metric)
+        self.alpha = alpha
+
+    def train(self, training_data):
+        super().train(training_data)
+        counts = np.bincount(self.y).astype(float)
+        self.vote_weights = np.where(counts > 0, counts, 1) ** -self.alpha
+        return self
+
+    def predict(self, x):
+        nearest = self.y[np.argsort(self._distances(x))[: self.k]]
+        scores = np.bincount(nearest, weights=self.vote_weights[nearest])
+        return scores.argmax()
