@@ -9,7 +9,7 @@ class Model(ABC):
         """Train the model on the given training DataFrame; returns self."""
 
     @abstractmethod
-    def predict(self, x):
+    def predict(self, x) -> int:
         """Predict the subject for a single feature row."""
 
     def __call__(self, x):
