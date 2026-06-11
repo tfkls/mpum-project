@@ -12,7 +12,7 @@ def gini(counts):
 
 class DecisionTree(Model):
     param_grid = {
-        "max_depth": [10, 20, 30, 10**9],
+        "max_depth": [10, 15, 20, 10**9],
         "min_samples": [2, 4, 6, 10],
         "alpha": [0, 0.5, 1.0],
     }
