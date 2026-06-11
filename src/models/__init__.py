@@ -1,4 +1,5 @@
-from .knn import KNN
+from .decision_tree import DecisionTree
+from .knn import KNN, KNNWeighted
 from .mlp import MLP
 
-MODELS = [KNN, MLP]
+MODELS = [KNN, KNNWeighted, MLP, DecisionTree]
