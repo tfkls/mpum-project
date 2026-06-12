@@ -3,5 +3,15 @@ from .decision_tree import DecisionTree
 from .knn import KNN, KNNWeighted
 from .mlp import MLP
 from .random_forest import RandomForest
+from .triplet import MLPEmbedding, TripletEmbedding
 
-MODELS = [KNN, KNNWeighted, MLP, DecisionTree, RandomForest, NearestCentroid]
+MODELS = [
+    KNN,
+    KNNWeighted,
+    MLP,
+    DecisionTree,
+    RandomForest,
+    NearestCentroid,
+    TripletEmbedding,
+    MLPEmbedding,
+]

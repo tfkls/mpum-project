@@ -41,4 +41,4 @@ class NearestCentroid(Model):
         else:
             raise Exception("Unknown metric")
 
-        return self.subjects[distances.argmin()]
+        return int(self.subjects[distances.argmin()])

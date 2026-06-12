@@ -61,7 +61,7 @@ class KNN(Model):
                     result = x
                     break
 
-        return result
+        return int(result if result is not None else -1)
 
 
 class KNNWeighted(KNN):
@@ -84,4 +84,4 @@ class KNNWeighted(KNN):
     def predict(self, x):
         nearest = self.y[np.argsort(self._distances(x))[: self.k]]
         scores = np.bincount(nearest, weights=self.vote_weights[nearest])
-        return scores.argmax()
+        return int(scores.argmax())
