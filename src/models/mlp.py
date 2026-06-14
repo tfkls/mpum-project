@@ -1,5 +1,3 @@
-"""Multi-layer perceptron"""
-
 import numpy as np
 
 from .base import Model

@@ -1,5 +1,3 @@
-"""naive bayes classifier"""
-
 import numpy as np
 
 from .base import Model

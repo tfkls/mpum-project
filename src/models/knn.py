@@ -1,5 +1,3 @@
-"""k-nearest-neighbors classifier on timing features."""
-
 import numpy as np
 
 from .base import Model

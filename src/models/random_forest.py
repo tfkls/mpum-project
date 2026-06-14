@@ -1,5 +1,3 @@
-"""Random forest: bagging over decision trees with sqrt(feat) random feature subsets."""
-
 import numpy as np
 
 from .base import Model

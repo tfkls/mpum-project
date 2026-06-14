@@ -1,5 +1,3 @@
-"""Decision tree (CART): greedy axis-aligned splits minimizing weighted Gini."""
-
 import numpy as np
 
 from .base import Model

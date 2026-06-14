@@ -1,5 +1,3 @@
-"""Nearest-centroid classifier: each subject is summarized by its mean vector."""
-
 import numpy as np
 
 from .base import Model

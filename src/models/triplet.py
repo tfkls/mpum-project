@@ -1,5 +1,3 @@
-"""Embedding approaches"""
-
 import numpy as np
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.neural_network import MLPClassifier
