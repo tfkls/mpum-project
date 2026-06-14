@@ -1,0 +1,21 @@
+model,for,params,all,big,small,ratio
+KNN,all,"{'k': 5, 'metric': 'manhattan'}",0.1554,0.0771,0.3266,4.2332
+KNN,small,"{'k': 1, 'metric': 'manhattan'}",0.1696,0.0964,0.3297,3.419
+KNNWeighted,all,"{'k': 5, 'metric': 'manhattan', 'alpha': 0.33}",0.1279,0.0821,0.2281,2.7772
+KNNWeighted,small,"{'k': 9, 'metric': 'manhattan', 'alpha': 1.0}",0.1191,0.1057,0.1484,1.4041
+MLP,all,"{'hidden': 128, 'alpha': 0.5}",0.173,0.1271,0.2734,2.1506
+MLP,small,"{'hidden': 64, 'alpha': 1.0}",0.1701,0.1607,0.1906,1.1861
+DecisionTree,all,"{'max_depth': 1000000000, 'min_samples': 2, 'alpha': 0.5}",0.3696,0.2729,0.5812,2.1302
+DecisionTree,small,"{'max_depth': 10, 'min_samples': 6, 'alpha': 1.0}",0.4873,0.4607,0.5453,1.1836
+RandomForest,all,"{'n_estimators': 100, 'max_depth': 1000000000, 'alpha': 1.0}",0.151,0.0579,0.3547,6.1304
+RandomForest,small,"{'n_estimators': 50, 'max_depth': 1000000000, 'alpha': 1.0}",0.1662,0.0657,0.3859,5.873
+NearestCentroid,all,{'metric': 'manhattan'},0.2353,0.2579,0.1859,0.7211
+NearestCentroid,small,{'metric': 'manhattan'},0.2353,0.2579,0.1859,0.7211
+NaiveBayes,all,{'alpha': 1},0.2863,0.28,0.3,1.0714
+NaiveBayes,small,{'alpha': 0},0.2868,0.3171,0.2203,0.6947
+TripletEmbedding,all,"{'dim': 16, 'margin': 3.0}",0.3525,0.3493,0.3594,1.0289
+TripletEmbedding,small,"{'dim': 8, 'margin': 1.0}",0.3657,0.3579,0.3828,1.0697
+MLPEmbedding,all,"{'hidden_layer_sizes': (128, 64)}",0.1882,0.1736,0.2203,1.2693
+MLPEmbedding,small,"{'hidden_layer_sizes': (128, 64)}",0.1882,0.1736,0.2203,1.2693
+PCAEmbedding,all,{'dim': 31},0.273,0.2829,0.2516,0.8894
+PCAEmbedding,small,{'dim': 31},0.273,0.2829,0.2516,0.8894
