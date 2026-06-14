@@ -1,4 +1,6 @@
 """
+Disclaimer: w dużej mierze wygenerowane narzędziami sztucznej inteligencji na potrzeby demonstracji.
+
 Live demo usage:
   python demo.py enroll <name>   capture repetitions
   python demo.py predict         capture one input and predict
@@ -12,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from main import ROOT, load_data
-from models.triplet import FakeMLPEmbedding
+from models.triplet import MLPEmbedding
 
 PASSWORD = ".tie5Roanl"
 KEYS = ["period", "t", "i", "e", "five", "Shift.r", "o", "a", "n", "l", "Return"]
@@ -51,7 +53,7 @@ def get_model():
     if MODEL_FILE.exists():
         return pickle.loads(MODEL_FILE.read_bytes())
     print("Training the embedding on the CMU subjects (one-time)...")
-    model = FakeMLPEmbedding().train(load_data())
+    model = MLPEmbedding().train(load_data())
     MODEL_FILE.write_bytes(pickle.dumps(model))
     return model
 
