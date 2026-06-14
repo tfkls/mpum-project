@@ -15,8 +15,5 @@ W porównaniu do oryginalnej pracy:
   zbiorach danych (względem ilości próbek)
 - Implementujemy inne modele zawarte w nowszych pracach na temat analizy pisania
 
-Dokładniejszy raport znajduje się w pliku [raport.pdf](./raport.pdf) (źródło
-raport.typ).
-
 (C) Tomasz Kulis i Jakub Sułkowski, udostępniony pod licencją
 [BSD 3-Clause](./LICENSE).

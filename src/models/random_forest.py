@@ -29,7 +29,7 @@ class RandomForest(Model):
                 max_depth=self.max_depth,
                 alpha=self.alpha,
                 max_features=max_features,
-                seed=int(rng.integers(2**31)),
+                seed=rng.integers(2**31),
             )
             self.trees.append(tree.train_arrays(x[rows], y[rows]))
         return self

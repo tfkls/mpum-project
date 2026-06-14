@@ -16,8 +16,7 @@ class KNN(Model):
         self.x = training_data.drop(columns=["subject"]).to_numpy()
         self.y = training_data["subject"].to_numpy()
         self.mus = self.x.mean(axis=0)
-        self.sigmas = self.x.std(axis=0)
-        self.sigmas = np.where(self.sigmas == 0, 1, self.sigmas)
+        self.sigmas = np.where(self.x.std(axis=0) == 0, 1, self.x.std(axis=0))
         self.x = (self.x - self.mus) / self.sigmas
         if self.metric == "mahalanobis":
             covariance_matrix = np.cov(self.x, rowvar=False)
@@ -44,8 +43,7 @@ class KNN(Model):
         return distances
 
     def predict(self, x):
-        nearest_indices = np.argsort(self._distances(x))[: self.k]
-        nearest = self.y[nearest_indices]
+        nearest = self.y[np.argsort(self._distances(x))[: self.k]]
 
         counts = np.bincount(nearest)
         results = np.where(counts == counts.max())[0]
@@ -76,10 +74,21 @@ class KNNWeighted(KNN):
     def train(self, training_data):
         super().train(training_data)
         counts = np.bincount(self.y).astype(float)
-        self.vote_weights = np.where(counts > 0, counts, 1) ** -self.alpha
+        self.weights = np.where(counts > 0, counts, 1) ** -self.alpha
         return self
 
     def predict(self, x):
         nearest = self.y[np.argsort(self._distances(x))[: self.k]]
-        scores = np.bincount(nearest, weights=self.vote_weights[nearest])
-        return int(scores.argmax())
+        counts = np.bincount(nearest, weights=self.weights[nearest])
+        results = np.where(counts == counts.max())[0]
+
+        result = None
+        if len(results) == 1:
+            result = results[0]
+        else:
+            for x in nearest:
+                if x in results:
+                    result = x
+                    break
+
+        return int(result if result is not None else -1)

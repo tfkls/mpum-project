@@ -81,17 +81,6 @@ class PCAEmbedding(TripletEmbedding):
         self.w = vectors[:, -self.dim :].T
 
 
-class LDAEmbedding(TripletEmbedding):
-    param_grid = {"dim": [8, 16]}
-
-    def __init__(self, dim=16):
-        self.dim = dim
-
-    def _fit_embedding(self, x, y, rows_of):
-        lda = LinearDiscriminantAnalysis().fit(x, y)
-        self.w = lda.scalings_[:, : self.dim].T
-
-
 class MLPEmbedding(TripletEmbedding):
     param_grid = {"hidden_layer_sizes": [(64,), (64, 64), (128, 64)]}
 

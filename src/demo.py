@@ -1,5 +1,5 @@
 """
-Disclaimer: w dużej mierze wygenerowane narzędziami sztucznej inteligencji na potrzeby demonstracji.
+Disclaimer: this was in large part created with help of AI for presentation purposes.
 
 Live demo usage:
   python demo.py enroll <name>   capture repetitions

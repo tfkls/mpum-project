@@ -4,7 +4,7 @@ from .decision_tree import DecisionTree
 from .knn import KNN, KNNWeighted
 from .mlp import MLP
 from .random_forest import RandomForest
-from .triplet import LDAEmbedding, MLPEmbedding, PCAEmbedding, TripletEmbedding
+from .triplet import MLPEmbedding, PCAEmbedding, TripletEmbedding
 
 MODELS = [
     KNN,
@@ -16,6 +16,5 @@ MODELS = [
     NaiveBayes,
     TripletEmbedding,
     MLPEmbedding,
-    LDAEmbedding,
     PCAEmbedding,
 ]

@@ -6,8 +6,8 @@ from .base import Model
 class NaiveBayes(Model):
     param_grid = {"alpha": [0, 1]}
 
-    def __init__(self):
-        pass
+    def __init__(self, alpha=1):
+        self.alpha = alpha
 
     def train(self, training_data):
         x = training_data.drop(columns=["subject"]).to_numpy()

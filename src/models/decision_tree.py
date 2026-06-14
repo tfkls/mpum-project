@@ -44,15 +44,15 @@ class DecisionTree(Model):
         self.root = self._build(x, m, np.arange(len(y)), depth=0)
         return self
 
-    def _build(self, x, m, rows, depth):
-        counts = m[rows].sum(axis=0)
+    def _build(self, x, m, mask, depth):
+        counts = m[mask].sum(axis=0)
         split = None
         if (
             depth < self.max_depth
             and gini(counts) > 0
-            and len(rows) >= self.min_samples
+            and len(mask) >= self.min_samples
         ):
-            split = self._best_split(x, m, rows)
+            split = self._best_split(x, m, mask)
         if split is None:
             return counts.argmax()
         feature, threshold, below, above = split
