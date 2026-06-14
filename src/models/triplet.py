@@ -1,10 +1,10 @@
-"""Triplet metric learning (from the TypeNet paper); NearestCentroid over an embedding (linear or preprocessed via MLP/neural nets)"""
+"""Embedding approaches"""
 
 import numpy as np
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.neural_network import MLPClassifier
 
 from .base import Model
-from .mlp import with_bias
 
 
 class TripletEmbedding(Model):
@@ -63,69 +63,38 @@ class TripletEmbedding(Model):
     def _embed(self, z):
         return z @ self.w.T
 
+    def embed(self, x):
+        return self._embed((x - self.mus) / self.sigmas)
+
     def predict(self, x):
-        e = self._embed((x - self.mus) / self.sigmas)
+        e = self.embed(x)
         distances = ((self.centroids - e) ** 2).sum(axis=1)
         return int(self.subjects[distances.argmin()])
 
 
-class MLPEmbedding(TripletEmbedding):
-    param_grid = {
-        "dim": [8, 16],
-        "margin": [1.0, 3.0],
-        "hidden": [64, 128],
-    }
+class PCAEmbedding(TripletEmbedding):
+    param_grid = {"dim": [8, 16, 31]}
 
-    def __init__(
-        self, dim=16, hidden=64, margin=1.0, steps=5000, batch=256, lr=0.03, seed=1
-    ):
-        super().__init__(dim, margin, steps, batch, lr, seed)
-        self.hidden = hidden
+    def __init__(self, dim=16):
+        self.dim = dim
 
     def _fit_embedding(self, x, y, rows_of):
-        others_of = {s: np.flatnonzero(y != s) for s in rows_of}
-
-        rng = np.random.default_rng(self.seed)
-        x = with_bias(x)
-        self.w1 = rng.normal(size=(self.hidden, x.shape[1])) * np.sqrt(2 / x.shape[1])
-        self.w2 = rng.normal(size=(self.dim, self.hidden + 1)) * np.sqrt(
-            2 / self.hidden
-        )
-
-        for _ in range(self.steps):
-            anchor = rng.integers(0, len(y), self.batch)
-            positive = np.array([rng.choice(rows_of[subject]) for subject in y[anchor]])
-            negative = np.array(
-                [rng.choice(others_of[subject]) for subject in y[anchor]]
-            )
-
-            inputs = x[np.concatenate([anchor, positive, negative])]
-            hidden = np.maximum(inputs @ self.w1.T, 0)
-            ea, ep, en = np.split(with_bias(hidden) @ self.w2.T, 3)
-
-            loss = (
-                self.margin
-                + ((ea - ep) ** 2).sum(axis=1)
-                - ((ea - en) ** 2).sum(axis=1)
-            )
-            active = (loss > 0)[:, None]
-            pos_dist = 2 * (ea - ep) * active
-            neg_dist = 2 * (ea - en) * active
-
-            output_grads = (
-                np.concatenate([pos_dist - neg_dist, -pos_dist, neg_dist]) / self.batch
-            )
-            hidden_grads = (output_grads @ self.w2)[:, :-1] * (hidden > 0)
-
-            self.w2 -= self.lr * output_grads.T @ with_bias(hidden)
-            self.w1 -= self.lr * hidden_grads.T @ inputs
-
-    def _embed(self, z):
-        hidden = np.maximum(with_bias(z) @ self.w1.T, 0)
-        return with_bias(hidden) @ self.w2.T
+        _, vectors = np.linalg.eigh(np.cov(x, rowvar=False))
+        self.w = vectors[:, -self.dim :].T
 
 
-class FakeMLPEmbedding(TripletEmbedding):
+class LDAEmbedding(TripletEmbedding):
+    param_grid = {"dim": [8, 16]}
+
+    def __init__(self, dim=16):
+        self.dim = dim
+
+    def _fit_embedding(self, x, y, rows_of):
+        lda = LinearDiscriminantAnalysis().fit(x, y)
+        self.w = lda.scalings_[:, : self.dim].T
+
+
+class MLPEmbedding(TripletEmbedding):
     param_grid = {"hidden_layer_sizes": [(64,), (64, 64), (128, 64)]}
 
     def __init__(self, hidden_layer_sizes=(128, 64)):

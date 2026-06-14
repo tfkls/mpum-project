@@ -34,11 +34,11 @@ class DecisionTree(Model):
     def train(self, training_data):
         x = training_data.drop(columns=["subject"]).to_numpy()
         y = training_data["subject"].to_numpy()
-        return self.train_arrays(x, y, None)
+        return self.train_arrays(x, y)
 
-    def train_arrays(self, x, y, sample_weight=None):
+    def train_arrays(self, x, y):
         """NOTE: Labels must be small non-negative ints or we crash :)"""
-        w = np.ones(len(y)) if sample_weight is None else np.asarray(sample_weight)
+        w = np.ones(len(y))
         w = w * np.bincount(y, weights=w)[y] ** -self.alpha
         self.rng = np.random.default_rng(self.seed)
         m = np.zeros((len(y), y.max() + 1))
