@@ -1,6 +1,7 @@
 """Triplet metric learning (from the TypeNet paper); NearestCentroid over an embedding (linear or preprocessed via MLP/neural nets)"""
 
 import numpy as np
+from sklearn.neural_network import MLPClassifier
 
 from .base import Model
 from .mlp import with_bias
@@ -9,7 +10,7 @@ from .mlp import with_bias
 class TripletEmbedding(Model):
     param_grid = {"dim": [8, 16], "margin": [1.0, 3.0]}
 
-    def __init__(self, dim=16, margin=1.0, steps=5000, batch=256, lr=0.01, seed=0):
+    def __init__(self, dim=16, margin=1.0, steps=10000, batch=256, lr=0.01, seed=0):
         self.dim = dim
         self.margin = margin
         self.steps = steps
@@ -69,10 +70,14 @@ class TripletEmbedding(Model):
 
 
 class MLPEmbedding(TripletEmbedding):
-    param_grid = {"dim": [8, 16], "margin": [1.0, 3.0], "hidden": [64, 128]}
+    param_grid = {
+        "dim": [8, 16],
+        "margin": [1.0, 3.0],
+        "hidden": [64, 128],
+    }
 
     def __init__(
-        self, dim=16, hidden=64, margin=1.0, steps=10000, batch=256, lr=0.03, seed=0
+        self, dim=16, hidden=64, margin=1.0, steps=5000, batch=256, lr=0.03, seed=1
     ):
         super().__init__(dim, margin, steps, batch, lr, seed)
         self.hidden = hidden
@@ -82,8 +87,8 @@ class MLPEmbedding(TripletEmbedding):
 
         rng = np.random.default_rng(self.seed)
         x = with_bias(x)
-        self.w1 = rng.normal(size=(self.hidden, x.shape[1])) / np.sqrt(2 / x.shape[1])
-        self.w2 = rng.normal(size=(self.dim, self.hidden + 1)) / np.sqrt(
+        self.w1 = rng.normal(size=(self.hidden, x.shape[1])) * np.sqrt(2 / x.shape[1])
+        self.w2 = rng.normal(size=(self.dim, self.hidden + 1)) * np.sqrt(
             2 / self.hidden
         )
 
@@ -118,3 +123,23 @@ class MLPEmbedding(TripletEmbedding):
     def _embed(self, z):
         hidden = np.maximum(with_bias(z) @ self.w1.T, 0)
         return with_bias(hidden) @ self.w2.T
+
+
+class FakeMLPEmbedding(TripletEmbedding):
+    param_grid = {"hidden_layer_sizes": [(64,), (64, 64), (128, 64)]}
+
+    def __init__(self, hidden_layer_sizes=(128, 64)):
+        self.hidden_layer_sizes = hidden_layer_sizes
+
+    def _fit_embedding(self, x, y, rows_of):
+        self.mlp = MLPClassifier(
+            hidden_layer_sizes=self.hidden_layer_sizes,
+            max_iter=1000,
+            random_state=1,
+            activation="relu",
+        ).fit(x, y)
+
+    def _embed(self, z):
+        for w, b in zip(self.mlp.coefs_[:-1], self.mlp.intercepts_[:-1]):
+            z = np.maximum(z @ w + b, 0)
+        return z
