@@ -6,7 +6,7 @@ from .base import Model
 
 
 class NaiveBayes(Model):
-    param_grid = {}
+    param_grid = {"alpha": [0, 1]}
 
     def __init__(self):
         pass
@@ -34,8 +34,9 @@ class NaiveBayes(Model):
         for c in self.classes:
             m = self.means[c]
             v = self.variances[c]
-            score = (np.sum(-0.5 * np.log(2 * np.pi * v) - ((x - m) ** 2) / (2 * v))
-                  + np.log(self.counts[c]))
+            score = np.sum(
+                -0.5 * np.log(2 * np.pi * v) - ((x - m) ** 2) / (2 * v)
+            ) + self.alpha * np.log(self.counts[c])
 
             if score > best_score:
                 best_score = score
