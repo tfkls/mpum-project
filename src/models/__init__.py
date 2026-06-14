@@ -4,6 +4,7 @@ from .knn import KNN, KNNWeighted
 from .mlp import MLP
 from .random_forest import RandomForest
 from .triplet import FakeMLPEmbedding, MLPEmbedding, TripletEmbedding
+from .bayes import NaiveBayes
 
 MODELS = [
     FakeMLPEmbedding,
@@ -14,4 +15,5 @@ MODELS = [
     RandomForest,
     NearestCentroid,
     TripletEmbedding,
+    NaiveBayes,
 ]
